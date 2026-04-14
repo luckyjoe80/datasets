@@ -1,33 +1,20 @@
-name: Manual System Health Check
+name: Execute Local Shell Script
 
-# This is the "magic" line that enables the manual button in the UI
 on:
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'info'
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
-      environment:
-        description: 'Environment to check'
-        required: true
-        default: 'production'
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  health-check:
+  run-bash-task:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      # Step 1: Download the code from the repo onto the runner
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Run Manual Task
-        run: |
-          echo "Starting manual health check for ${{ github.event.inputs.environment }}..."
-          echo "Setting log level to ${{ github.event.inputs.logLevel }}."
-          # Add your actual commands here, like a Python script or a curl command
-          date
+      # Step 2: Ensure the script is executable (important for Linux runners)
+      - name: Grant Execute Permissions
+        run: chmod +x ./scripts/my-script.sh
+
+      # Step 3: Run the script
+      - name: Run Bash Script
+        run: ./scripts/my-script.sh
